@@ -83,4 +83,8 @@ require (
 	sourcegraph.com/sourcegraph/appdash-data v0.0.0-20151005221446-73f23eafcf67
 )
 
+replace github.com/pingcap/kvproto => /home/xiaojin.zxj/010.tidb/kvproto
+
+replace github.com/tikv/client-go/v2 => /home/xiaojin.zxj/010.tidb/client-go
+
 go 1.16
