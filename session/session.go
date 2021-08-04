@@ -1649,6 +1649,8 @@ func (s *session) ExecuteStmt(ctx context.Context, stmtNode ast.StmtNode) (sqlex
 	s.txn.onStmtStart(digest.String())
 	defer s.txn.onStmtEnd()
 
+	failpoint.Inject("mockStmtSlow", nil)
+
 	// Transform abstract syntax tree to a physical plan(stored in executor.ExecStmt).
 	compiler := executor.Compiler{Ctx: s}
 	stmt, err := compiler.Compile(ctx, stmtNode)
@@ -2517,9 +2519,8 @@ func BootstrapSession(store kv.Storage) (*domain.Domain, error) {
 	cfg := config.GetGlobalConfig()
 	if len(cfg.Plugin.Load) > 0 {
 		err := plugin.Load(context.Background(), plugin.Config{
-			Plugins:        strings.Split(cfg.Plugin.Load, ","),
-			PluginDir:      cfg.Plugin.Dir,
-			PluginVarNames: &variable.PluginVarNames,
+			Plugins:   strings.Split(cfg.Plugin.Load, ","),
+			PluginDir: cfg.Plugin.Dir,
 		})
 		if err != nil {
 			return nil, err
