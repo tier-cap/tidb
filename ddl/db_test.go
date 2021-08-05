@@ -459,6 +459,17 @@ func (s *testSerialDBSuite) TestAddExpressionIndexRollback(c *C) {
 	c.Assert(physicalID, Equals, int64(0))
 }
 
+func (s *testSerialDBSuite) TestDropTableOnTiKVDiskFull(c *C) {
+	fmt.Println("TestDropTableOnTiKVDiskFull running...")
+	tk := testkit.NewTestKit(c, s.store)
+	tk.MustExec("use test_db")
+	tk.MustExec("create table test_disk_full_drop_table(a int);")
+	c.Assert(failpoint.Enable("github.com/pingcap/tidb/store/mockstore/unistore/rpcTiKVAllowedOnAlreadyFull", `return(true)`), IsNil)
+	defer failpoint.Disable("github.com/pingcap/tidb/store/mockstore/unistore/rpcTiKVAllowedOnAlreadyFull")
+	tk.MustExec("drop table test_disk_full_drop_table;")
+	fmt.Println("TestDropTableOnTiKVDiskFull over")
+}
+
 func batchInsert(tk *testkit.TestKit, tbl string, start, end int) {
 	dml := fmt.Sprintf("insert into %s values", tbl)
 	for i := start; i < end; i++ {

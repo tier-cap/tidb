@@ -14,6 +14,7 @@
 package unistore
 
 import (
+	"fmt"
 	"io"
 	"math"
 	"os"
@@ -66,6 +67,17 @@ func (c *RPCClient) SendRequest(ctx context.Context, addr string, req *tikvrpc.R
 	failpoint.Inject("unistoreRPCClientSendHook", func(val failpoint.Value) {
 		if val.(bool) && UnistoreRPCClientSendHook != nil {
 			UnistoreRPCClientSendHook(req)
+		}
+	})
+
+	failpoint.Inject("rpcTiKVAllowedOnAlreadyFull", func(val failpoint.Value) {
+		if val.(bool) {
+			fmt.Println("SendRequest rpcTiKVAllowedOnAlreadyFull trigger")
+			if  req.Type == tikvrpc.CmdPrewrite || req.Type ==  tikvrpc.CmdCommit {
+				if req.Context.DiskFullOpt != kvrpcpb.DiskFullOpt_AllowedOnAlreadyFull {
+					failpoint.Return(tikvrpc.GenRegionErrorResp(req, &errorpb.Error{DiskFull: &errorpb.DiskFull{StoreId: 1, Reason: "disk full"}}))
+				}
+			}
 		}
 	})
 

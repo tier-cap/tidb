@@ -38,6 +38,7 @@ import (
 	"github.com/pingcap/tidb/util/logutil"
 	"github.com/pingcap/tidb/util/rowcodec"
 	"github.com/tikv/client-go/v2/tikv"
+	"github.com/tikv/client-go/v2/txnkv/transaction"
 	"go.uber.org/zap"
 )
 
@@ -640,7 +641,7 @@ func (s *SchemaAmender) genAllAmendMutations(ctx context.Context, commitMutation
 
 // AmendTxn does check and generate amend mutations based on input infoSchema and mutations, mutations need to prewrite
 // are returned, the input commitMutations will not be changed.
-func (s *SchemaAmender) AmendTxn(ctx context.Context, startInfoSchema tikv.SchemaVer, change *tikv.RelatedSchemaChange,
+func (s *SchemaAmender) AmendTxn(ctx context.Context, startInfoSchema tikv.SchemaVer, change *transaction.RelatedSchemaChange,
 	commitMutations tikv.CommitterMutations) (tikv.CommitterMutations, error) {
 	// Get info schema meta
 	infoSchemaAtStart := startInfoSchema.(infoschema.InfoSchema)
