@@ -287,7 +287,8 @@ func (d *ddl) addBatchDDLJobs(tasks []*limitJobTask) {
 			return errors.Trace(err)
 		}
 
-		// set ddl job allowed when tikv disk full.
+		// Drop table need to be supported when tikv is disk full, which depends on ddl job queue.
+		// So should let ddl job queue operations set.
 		txn.SetDiskFullOpt(kvrpcpb.DiskFullOpt_AllowedOnAlreadyFull)
 		for i, task := range tasks {
 			job := task.job
