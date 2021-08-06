@@ -1694,6 +1694,7 @@ func (w *GCWorker) checkLeader() (bool, error) {
 		}
 		return true, nil
 	}
+
 	se.RollbackTxn(ctx)
 
 	_, err = se.ExecuteInternal(ctx, "BEGIN")
