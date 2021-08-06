@@ -48,6 +48,7 @@ type TxStructure struct {
 	prefix     []byte
 }
 
+// SetDiskFullOpt set the allowed option of current operation in each TiKV disk usage level.
 func (t *TxStructure) SetDiskFullOpt(level kvrpcpb.DiskFullOpt) {
 	t.readWriter.SetDiskFullOpt(level)
 }
