@@ -75,7 +75,7 @@ func (c *RPCClient) SendRequest(ctx context.Context, addr string, req *tikvrpc.R
 			fmt.Println("SendRequest rpcTiKVAllowedOnAlreadyFull trigger")
 			if  req.Type == tikvrpc.CmdPrewrite || req.Type ==  tikvrpc.CmdCommit {
 				if req.Context.DiskFullOpt != kvrpcpb.DiskFullOpt_AllowedOnAlreadyFull {
-					failpoint.Return(tikvrpc.GenRegionErrorResp(req, &errorpb.Error{DiskFull: &errorpb.DiskFull{StoreId: 1, Reason: "disk full"}}))
+					failpoint.Return(tikvrpc.GenRegionErrorResp(req, &errorpb.Error{DiskFull: &errorpb.DiskFull{StoreId: []uint64{1}, Reason: "disk full"}}))
 				}
 			}
 		}
